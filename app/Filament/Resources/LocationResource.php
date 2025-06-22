@@ -30,8 +30,8 @@ class LocationResource extends Resource
         return $form
             ->schema([
                 //inputs
-                TextInput::make('name'),
-                TextInput::make('Location'),
+                TextInput::make('location_name'),
+                TextInput::make('geo_id'),
             ]);
     }
 
@@ -40,7 +40,7 @@ class LocationResource extends Resource
         return $table
             ->columns([
                 //column heads
-                TextColumn::make('name'),
+                TextColumn::make('location_name'),
                 TextColumn::make('geo_id'),
                 TextColumn::make('timestamp'),
             ])
