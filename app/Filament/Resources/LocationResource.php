@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\LocationResource\Pages;
+use App\Filament\Resources\LocationResource\RelationManagers;
+use App\Models\Location;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,9 +19,9 @@ use Filament\Forms\Components\TextInput;
 //to display columns in users
 use Filament\Tables\Columns\TextColumn;
 
-class UserResource extends Resource
+class LocationResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Location::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -29,10 +29,9 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //user form
+                //inputs
                 TextInput::make('name'),
-                TextInput::make('email'),
-                TextInput::make('password')->password()
+                TextInput::make('Location'),
             ]);
     }
 
@@ -42,7 +41,8 @@ class UserResource extends Resource
             ->columns([
                 //column heads
                 TextColumn::make('name'),
-                TextColumn::make('email')
+                TextColumn::make('geo_id'),
+                TextColumn::make('timestamp'),
             ])
             ->filters([
                 //
@@ -67,9 +67,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListLocations::route('/'),
+            'create' => Pages\CreateLocation::route('/create'),
+            'edit' => Pages\EditLocation::route('/{record}/edit'),
         ];
     }
 }
