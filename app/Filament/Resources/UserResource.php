@@ -23,15 +23,15 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-users';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //user form
-                TextInput::make('name'),
-                TextInput::make('email'),
+                TextInput::make('name')->required(),
+                TextInput::make('email')->email(),
                 TextInput::make('password')->password()
             ]);
     }

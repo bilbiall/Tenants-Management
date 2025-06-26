@@ -55,4 +55,13 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
     }
+
+    //boot method to fix login issue
+    public function boot(): void
+        {
+            \Filament\Facades\Filament::registerPanel(
+            $this->panel(app(\Filament\Panel::class))
+            );
+        }
+
 }
