@@ -20,8 +20,15 @@ class House extends Model
         'house_status',
     ];
 
+    //relationship with the location model
     public function location()
     {
         return $this->belongsTo(Location::class);
+    }
+
+    //relationship with the tenant model
+    public function tenant()
+    {
+        return $this->hasOne(Tenant::class);
     }
 }
