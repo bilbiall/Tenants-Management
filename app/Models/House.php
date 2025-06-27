@@ -13,10 +13,10 @@ class House extends Model
 
     protected $fillable = [
         'house_name',
-        'number_of_rooms',
+        //'number_of_rooms',
         'rent_amount',
         'location_id',
-        'num_of_bedrooms',
+        'house_type',
         'house_status',
     ];
 

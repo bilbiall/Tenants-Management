@@ -33,8 +33,13 @@ class HouseResource extends Resource
             ->schema([
                 //form for new house
                 TextInput::make('house_name')->required(),
-                TextInput::make('number_of_rooms')->numeric()->required(),
-                TextInput::make('num_of_bedrooms')->required(),
+                //TextInput::make('number_of_rooms')->numeric()->required(),
+                //TextInput::make('num_of_bedrooms')->required(),
+                TextInput::make('house_type')
+                    ->label('House Type')
+                    ->placeholder('e.g. Bedsitter, 1 Bedroom, 2 Bedroom')
+                    ->required(),
+
                 TextInput::make('rent_amount')->numeric()->required(),
 
                 Select::make('location_id')
@@ -59,8 +64,8 @@ class HouseResource extends Resource
             ->columns([
                 //to display a list of the houses
                 TextColumn::make('house_name')->searchable(),
-                TextColumn::make('number_of_rooms'),
-                TextColumn::make('num_of_bedrooms'),
+                //TextColumn::make('number_of_rooms'),
+                TextColumn::make('house_type'),
                 TextColumn::make('rent_amount')->money('KES'),
                 TextColumn::make('location.location_name')->label('Location'),
                 TextColumn::make('house_status'),

@@ -34,11 +34,27 @@ class Tenant extends Model
             $phone = $tenant->phone_number;
             $houseName = $tenant->house->house_name;
             $rent = $tenant->house->rent_amount;
+            $appName = config('app.name');
 
-            $message = "Hello $name, welcome to Dakota Apartments. You were admitted to $houseName with a monthly rent of KES $rent";
+            $message = "Hello $name, welcome to $appName. You were admitted to $houseName with a monthly rent of KES $rent";
 
             // 3. Send SMS using your helper
             SmsHelper::sendSms($phone, $message);
+        });
+
+        static::updated(function ($tenant) {
+            // Check if the house was changed
+            if ($tenant->isDirty('house_id')) {
+                $originalHouseId = $tenant->getOriginal('house_id');
+
+                // Set old house to Vacant
+                \App\Models\House::where('id', $originalHouseId)->update([
+                    'house_status' => 'Vacant',
+                ]);
+
+                // Set new house to Occupied
+                $tenant->house->update(['house_status' => 'Occupied']);
+            }
         });
 
         static::deleted(function ($tenant) {
