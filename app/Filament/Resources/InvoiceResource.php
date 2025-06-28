@@ -24,6 +24,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Textarea;
 
+use Filament\Tables\Filters\SelectFilter;
+
+
 
 
 class InvoiceResource extends Resource
@@ -106,11 +109,28 @@ class InvoiceResource extends Resource
                 TextColumn::make('invoice_number')->label('Invoice #'),
                 TextColumn::make('tenant.tenant_name')->label('Tenant'),
                 TextColumn::make('tenant.house.house_name')->label('House'),
-                TextColumn::make('total_amount')->money('KES'),
+                //TextColumn::make('total_amount')->money('KES'),
+                TextColumn::make('amount')
+                    ->label('Total Amount')
+                    ->money('KES') // Optional: formats as currency
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('invoice_date')->date(),
                 TextColumn::make('due_date')->date(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn(string $state): string => $state === 'Paid' ? 'success' : 'danger'),
+
             ])
             ->filters([
+                SelectFilter::make('status')
+                    ->label('Payment Status')
+                    ->options([
+                        'Paid' => 'Paid',
+                        'Unpaid' => 'Unpaid',
+                    ]),
+
                 //filters for invoices
                 Filter::make('bill_month')
                     ->label('Filter by Month & Year')
