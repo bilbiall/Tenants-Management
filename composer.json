@@ -27,7 +27,10 @@
             "Database\\Seeders\\": "database/seeders/",
             "App\\Helpers\\": "app/Helpers/"
 
-        }
+        },
+        "files": [
+        "app/Helpers/SmsHelper.php"
+    ]
     },
     "autoload-dev": {
         "psr-4": {
