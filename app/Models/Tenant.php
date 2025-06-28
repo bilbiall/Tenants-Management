@@ -24,6 +24,13 @@ class Tenant extends Model
         return $this->belongsTo(House::class);
     }
 
+    //relationship with bill model
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+
+
     //to update status of house to occupied
     protected static function booted()
     {
