@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 //use helper for sending sms
 use App\Helpers\SmsHelper;
 
+use App\Models\Invoice;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Tenant extends Model
 {
     //all tenant db related stuff here
@@ -28,6 +31,15 @@ class Tenant extends Model
     public function bills()
     {
         return $this->hasMany(Bill::class);
+    }
+
+    //rship with invoices
+    use HasFactory;
+
+    // A tenant can have many invoices
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
     }
 
 
