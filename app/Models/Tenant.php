@@ -42,6 +42,13 @@ class Tenant extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    //relationship with payments
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+
 
     //to update status of house to occupied
     protected static function booted()

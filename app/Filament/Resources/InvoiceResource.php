@@ -120,9 +120,17 @@ class InvoiceResource extends Resource
 
                 TextColumn::make('invoice_date')->date(),
                 TextColumn::make('due_date')->date(),
+                /*TextColumn::make('status')
+                    ->badge()
+                    ->color(fn(string $state): string => $state === 'Paid' ? 'success' : 'danger'),*/
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => $state === 'Paid' ? 'success' : 'danger'),
+                    ->color(fn(string $state): string => match (strtolower($state)) {
+                        'paid' => 'success',   // Green
+                        'partial' => 'purple', // Purple
+                        default => 'danger',   // Red for unpaid and any unknowns
+                    }),
+
 
             ])
             ->filters([
@@ -130,10 +138,11 @@ class InvoiceResource extends Resource
                     ->label('Payment Status')
                     ->options([
                         'Paid' => 'Paid',
+                        'Partial' => 'Partial',
                         'Unpaid' => 'Unpaid',
                     ]),
 
-                //filters for invoices
+                //filters for invoices month
                 Filter::make('bill_month')
                     ->label('Filter by Month & Year')
                     ->form([

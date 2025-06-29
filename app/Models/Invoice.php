@@ -31,6 +31,12 @@ class Invoice extends Model
         return $this->belongsTo(Tenant::class);
     }
 
+    //payment invoice relationship
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     //to send sms
     protected static function booted()
     {
