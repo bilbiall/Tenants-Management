@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            //balance and partial status to invoice model
-            //$table->double('balance')->default(0);
-            //$table->string('status')->default('unpaid'); // unpaid, partial, paid
+        Schema::table('tenants', function (Blueprint $table) {
+                $table->double('balance')->default(0);
+
         });
     }
 
@@ -23,8 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            //
+        Schema::table('tenants', function (Blueprint $table) {
+            $table->double('balance')->default(0);
+
         });
     }
 };

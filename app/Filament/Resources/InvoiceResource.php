@@ -65,6 +65,45 @@ class InvoiceResource extends Resource
                                 ? ($bills->water ?? 0) + ($bills->trash ?? 0) + ($bills->electricity ?? 0) + ($bills->internet ?? 0)
                                 : 0;
 
+                            // 🟣 New: Get tenant's running balance (owed/overpaid)
+                            $previousBalance = $tenant->balance ?? 0;
+
+                            // 🟣 Compute total amount to be paid this month
+                            $total = ($rent + $billTotal) - $previousBalance;
+
+                            $set('rent_only', $rent);
+                            $set('bill_only', $billTotal);
+                            $set('previous_balance', $previousBalance);
+                            $set('total_amount', $total > 0 ? $total : 0); // Avoid negative invoice
+                        } else {
+                            $set('rent_only', null);
+                            $set('bill_only', null);
+                            $set('previous_balance', null);
+                            $set('total_amount', null);
+                        }
+                    }),
+                    /*TextInput::make('previous_balance')
+                        ->label('Previous Balance Adjustment')
+                        ->disabled(),*/
+
+
+
+                    /*->afterStateUpdated(function ($state, callable $set) {
+                        $tenant = \App\Models\Tenant::with('house')->find($state);
+
+                        if ($tenant && $tenant->house) {
+                            $rent = $tenant->house->rent_amount;
+
+                            // Get bills for current month
+                            $bills = \App\Models\Bill::where('tenant_id', $tenant->id)
+                                ->whereMonth('bill_month', now()->month)
+                                ->whereYear('bill_month', now()->year)
+                                ->first();
+
+                            $billTotal = $bills
+                                ? ($bills->water ?? 0) + ($bills->trash ?? 0) + ($bills->electricity ?? 0) + ($bills->internet ?? 0)
+                                : 0;
+
                             $set('total_amount', $rent + $billTotal);
                             $set('rent_only', $rent);
                             $set('bill_only', $billTotal);
@@ -73,7 +112,7 @@ class InvoiceResource extends Resource
                             $set('rent_only', null);
                             $set('bill_only', null);
                         }
-                    }),
+                    }),*/
 
                 // Read-only breakdown fields
                 TextInput::make('rent_only')
@@ -114,6 +153,12 @@ class InvoiceResource extends Resource
                 //TextColumn::make('total_amount')->money('KES'),
                 TextColumn::make('amount')
                     ->label('Total Amount')
+                    ->money('KES') // Optional: formats as currency
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('balance')
+                    ->label('Balance')
                     ->money('KES') // Optional: formats as currency
                     ->sortable()
                     ->searchable(),
