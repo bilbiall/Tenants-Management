@@ -41,8 +41,8 @@ class LocationResource extends Resource
             ->columns([
                 //column heads
                 TextColumn::make('location_name'),
-                TextColumn::make('geo_id'),
-                TextColumn::make('timestamp'),
+                TextColumn::make('geo_id')->label('City'),
+                //TextColumn::make('timestamp'),
             ])
             ->filters([
                 //

@@ -19,6 +19,7 @@ class Tenant extends Model
         'email',
         'phone_number',
         'date_admitted',
+        'balance',
     ];
 
     //relationship for with the house model
@@ -41,6 +42,13 @@ class Tenant extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    //relationship to have the latest balance
+    public function latestInvoice()
+    {
+        return $this->hasOne(Invoice::class)->latestOfMany();
+    }
+
 
     //relationship with payments
     public function payments()

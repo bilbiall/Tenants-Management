@@ -90,7 +90,32 @@ class TenantResource extends Resource
                 TextColumn::make('tenant_name')->searchable(),
                 TextColumn::make('house.house_name')->label('House'),
                 TextColumn::make('house.rent_amount')->money('KES'),
-                TextColumn::make('house.house_status')->label('Status'),
+                /*TextColumn::make('latestInvoice.balance')
+                    ->label('Balance')
+                    ->money('KES')
+                    ->color(function ($state) {
+                        if ($state === null) return 'secondary'; // No invoice yet
+                        if ($state == 0) return 'success';
+                        if ($state < 0) return 'warning'; // Overpaid
+                        return 'danger'; // Still owing
+                    }),*/
+                //include color for overpaid
+                TextColumn::make('latestInvoice.balance')
+                    ->label('Balance')
+                    ->money('KES')
+                    ->color(function ($state) {
+                        if ($state === null) {
+                            return 'secondary'; // No invoice yet
+                        } elseif ($state == 0) {
+                            return 'success'; // Fully paid
+                        } elseif ($state < 0) {
+                            return 'warning'; // Overpaid
+                        } else {
+                            return 'danger'; // Still has balance due
+                        }
+                    }),
+
+
                 TextColumn::make('date_admitted')->date(),
             ])
             ->filters([
