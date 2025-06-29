@@ -38,7 +38,7 @@ class TenantResource extends Resource
                     })
                     ->searchable()
                     ->required(),*/
-                Select::make('house_id')
+                /*Select::make('house_id')
                     ->label('House')
                     ->searchable()
                     ->getSearchResultsUsing(function (string $search) {
@@ -49,7 +49,31 @@ class TenantResource extends Resource
                     ->getOptionLabelUsing(function ($value): ?string {
                         return \App\Models\House::find($value)?->house_name;
                     })
+                    ->required(),*/
+                    /*Select::make('house_id')
+                        ->label('House')
+                        ->searchable()
+                        ->getSearchResultsUsing(function (string $search) {
+                            return \App\Models\House::query()
+                                ->where('house_status', 'Vacant') // ✅ Only vacant
+                                ->where('house_name', 'like', "%{$search}%")
+                                ->pluck('house_name', 'id');
+                        })
+                        ->getOptionLabelUsing(function ($value): ?string {
+                            return \App\Models\House::find($value)?->house_name;
+                        })
+                        ->required(),*/
+
+                //cleaner alternan=tive
+                Select::make('house_id')
+                    ->label('House')
+                    ->relationship('house', 'house_name', modifyQueryUsing: fn ($query) =>
+                        $query->where('house_status', 'Vacant')
+                    )
+                    ->searchable()
                     ->required(),
+
+
 
                 TextInput::make('tenant_name')->required(),
                 TextInput::make('email')->email()->required(),

@@ -11,6 +11,8 @@ use Filament\Notifications\Notification;
 use App\Models\Tenant;
 use App\Models\Invoice;
 use App\Models\Bill;
+//use helper for sending sms
+use App\Helpers\SmsHelper;
 
 class ListInvoices extends ListRecords
 {
@@ -70,7 +72,7 @@ class ListInvoices extends ListRecords
                             'status' => 'Unpaid',
                         ]);
 
-                        sendSms($tenant->phone_number, "Hello {$tenant->tenant_name}, your invoice ({$invoice->invoice_number}) of KES {$total} is due by {$invoice->due_date->format('M d')}.");
+                        SmsHelper::sendSms($tenant->phone_number, "Hello {$tenant->tenant_name}, your invoice ({$invoice->invoice_number}) of KES {$total} is due by {$invoice->due_date->format('M d')}.");
 
                         $count++;
                     }
