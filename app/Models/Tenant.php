@@ -56,6 +56,13 @@ class Tenant extends Model
         return $this->hasMany(Payment::class);
     }
 
+    //relationship with user for tenant panel
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+
 
 
     //to update status of house to occupied

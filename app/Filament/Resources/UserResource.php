@@ -15,15 +15,21 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 //for the input form for users
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Hash;
+
+
+
 
 //to display columns in users
 use Filament\Tables\Columns\TextColumn;
+
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-s-users';
+    protected static ?string $navigationIcon = 'heroicon-s-user-circle';
 
     public static function form(Form $form): Form
     {
@@ -32,8 +38,28 @@ class UserResource extends Resource
                 //user form
                 TextInput::make('name')->required(),
                 TextInput::make('email')->email(),
-                TextInput::make('password')->password()
-            ]);
+                //TextInput::make('password')->password()
+                //to enable password updates
+                TextInput::make('password')
+                    ->password()
+                    ->required()
+                    //->dehydrateStateUsing(fn ($state) => \Hash::make($state))
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+
+                    ->dehydrated(fn ($state) => filled($state)) // Only update if filled
+                    ->label('Password'),
+
+                // ✅ Role selection dropdown
+                Select::make('role')
+                    ->required()
+                    ->label('User Role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'caretaker' => 'Caretaker',
+                        'tenant' => 'Tenant',
+                    ])
+                    ->native(false), // optional: to use searchable dropdown
+                ]);
     }
 
     public static function table(Table $table): Table

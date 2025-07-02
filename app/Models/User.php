@@ -20,7 +20,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone_number',
         'password',
+        'role'
     ];
 
     /**
@@ -45,4 +47,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isTenant(): bool
+    {
+        return $this->role === 'tenant';
+    }
+
+    public function isCaretaker(): bool
+    {
+        return $this->role === 'caretaker';
+    }
+
+    //relationship with tenants
+    public function tenant()
+    {
+        return $this->hasOne(Tenant::class);
+    }
+
+    //full label attribute for the users search
+    // In User.php model
+    public function getFullLabelAttribute()
+    {
+        return "{$this->name} ({$this->email})";
+    }
+
+
+
+
 }

@@ -20,11 +20,16 @@ use Filament\Forms\Components\DatePicker;
 
 use Filament\Tables\Columns\TextColumn;
 
+use App\Models\User; // Afor linking tenant to user
+use App\Helpers\SmsHelper; // ✅ for sms
+use Illuminate\Support\Str; // For generating a temporary password
+
+
 class TenantResource extends Resource
 {
     protected static ?string $model = Tenant::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     public static function form(Form $form): Form
     {
@@ -65,6 +70,74 @@ class TenantResource extends Resource
                         ->required(),*/
 
                 //cleaner alternan=tive
+                //select user
+                /*Select::make('user_id')
+                    ->label('Linked User')
+                    ->relationship('user', 'name') // assumes User model has a 'name' column
+                    ->searchable(),
+                    ->required(),*/
+
+                //select user or alt create new user
+                /*Select::make('user_id')
+                    ->label('Linked User')
+                    ->relationship('user', 'name')
+                    ->searchable()
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->email()->required()->unique(User::class, 'email'),
+                        TextInput::make('password')->password()->required(),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        return User::create([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'password' => bcrypt($data['password']),
+                        ]);
+                    }),*/
+                //new user with the role setup auto and the sms sent with password and login
+                Select::make('user_id')
+                    ->label('Linked User')
+                    ->relationship('user', 'full_label') //drop down to be John Doe (john@example.com)
+                    //->relationship('user', 'name') // or 'email' if you use email
+                    ->searchable()
+                    ->getSearchResultsUsing(function (string $search) { // ✅ Added to enable search by name or email
+                        return \App\Models\User::query()
+                            ->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->limit(10)
+                            ->get()
+                            ->mapWithKeys(function ($user) {
+                                return [$user->id => $user->full_label]; // ✅ returns full_label like "John Doe (john@example.com)"
+                            });
+                    }) // ✅ End of addition
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')->required(),
+                        TextInput::make('email')->email()->required()->unique(User::class, 'email'),
+                        TextInput::make('phone_number')
+                            ->label('Phone Number')
+                            ->required(),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $password = Str::random(8); // Generate temp password
+
+                        $user = User::create([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'phone_number' => $data['phone_number'],
+                            'password' => bcrypt($password),
+                            'role' => 'tenant', // ✅ Automatically assign tenant role
+                        ]);
+
+                        // ✅ Send SMS
+                        $message = "Hi {$user->name}, your tenant account has been created. Login with Email: {$user->email}, Password: {$password} - " . config('app.name');
+                        SmsHelper::sendSms($user->phone_number, $message);
+
+                        return $user->getKey();
+                    }),
+
+
                 Select::make('house_id')
                     ->label('House')
                     ->relationship('house', 'house_name', modifyQueryUsing: fn ($query) =>
@@ -78,6 +151,12 @@ class TenantResource extends Resource
                 TextInput::make('tenant_name')->required(),
                 TextInput::make('email')->email()->required(),
                 TextInput::make('phone_number')->required(),
+                /*Select::make('user_id')
+                    ->label('User')
+                    ->relationship('user', 'name') // or 'email' if you want email shown
+                    ->searchable()
+                    ->required(), // Optional if you want to always assign user*/
+
                 DatePicker::make('date_admitted')->default(now())->required(),
             ]);
     }
