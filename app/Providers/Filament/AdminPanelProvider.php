@@ -18,6 +18,12 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+//for user editing profile
+//use Filament\Pages\Auth\EditProfile;
+//use Filament\Account\Pages\EditProfile;
+
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -26,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->plugins([
+            FilamentEditProfilePlugin::make(),])
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -34,6 +42,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                //EditProfile::class, //user edit profile
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

@@ -19,6 +19,12 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 use Filament\Navigation\NavigationGroup;
+use Filament\Pages\Account;
+
+//for user editing profile
+//use Filament\Pages\Auth\EditProfile;
+
+
 
 
 class TenantPanelProvider extends PanelProvider
@@ -36,6 +42,7 @@ class TenantPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\\Filament\\Tenant\\Pages')
             ->pages([
                 Pages\Dashboard::class,
+                //EditProfile::class, // ✅ Enable user account management
             ])
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
             ->widgets([
