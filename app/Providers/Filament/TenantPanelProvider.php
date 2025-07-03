@@ -23,6 +23,7 @@ use Filament\Pages\Account;
 
 //for user editing profile
 //use Filament\Pages\Auth\EditProfile;
+use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
 
 
@@ -34,6 +35,8 @@ class TenantPanelProvider extends PanelProvider
         return $panel
             ->id('tenant')
             ->path('tenant')
+            ->plugins([
+            FilamentEditProfilePlugin::make(),])
             ->login() // Enables the login page
             ->colors([
                 'primary' => Color::Amber,
