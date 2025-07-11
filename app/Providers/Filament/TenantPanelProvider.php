@@ -25,6 +25,9 @@ use Filament\Pages\Account;
 //use Filament\Pages\Auth\EditProfile;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
+use TomatoPHP\FilamentAlerts\FilamentAlertsPlugin;
+
+
 
 
 
@@ -37,6 +40,11 @@ class TenantPanelProvider extends PanelProvider
             ->path('tenant')
             ->plugins([
             FilamentEditProfilePlugin::make(),])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('15s')
+            //->plugin(
+                //FilamentAlertsPlugin::make()
+            //)
             ->login() // Enables the login page
             ->colors([
                 'primary' => Color::Amber,

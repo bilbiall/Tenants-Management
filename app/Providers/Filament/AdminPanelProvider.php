@@ -24,6 +24,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 
+//alerts
+use TomatoPHP\FilamentAlerts\FilamentAlertsPlugin;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -34,6 +37,15 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->plugins([
             FilamentEditProfilePlugin::make(),])
+
+            //for notifications
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('15s')
+
+            //->plugin(
+            //FilamentAlertsPlugin::make()
+                //->hideNotificationsResources() // Show tenant and admin notification UI
+        //)
             ->login()
             ->colors([
                 'primary' => Color::Amber,

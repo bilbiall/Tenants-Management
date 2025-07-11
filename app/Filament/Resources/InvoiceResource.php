@@ -27,7 +27,11 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\SelectFilter;
 
 use App\Helpers\sendSms;
-
+//for notifs
+use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use App\Models\User;
 
 
 
@@ -249,4 +253,25 @@ class InvoiceResource extends Resource
             'edit' => Pages\EditInvoice::route('/{record}/edit'),
         ];
     }
+
+    //for notifs
+    /*protected function afterCreate(): void
+{
+    $invoice = $this->record;
+
+    // Build message
+    $message = "Invoice #{$invoice->invoice_number} created for {$invoice->tenant->tenant_name}, amount KES {$invoice->amount}";
+
+    Notification::make()
+        ->title('🧾 New Invoice')
+        ->body($message)
+        ->warning() // or ->success(), ->danger(), etc.
+        ->actions([
+            Action::make('view')
+                ->label('View Invoice')
+                ->url(route('filament.admin.invoices.edit', ['record' => $invoice->id]))
+                ->openUrlInNewTab(),
+        ])
+        ->sendToDatabase(User::where('role', 'tenant')->get());
+}*/
 }

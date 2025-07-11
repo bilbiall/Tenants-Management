@@ -10,6 +10,8 @@ use App\Helpers\SmsHelper;
 use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Illuminate\Database\Eloquent\Relations\HasMany; // for relationship with issues
+
 class Tenant extends Model
 {
     //all tenant db related stuff here
@@ -61,6 +63,13 @@ class Tenant extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    //relationship for issues
+    public function issues(): HasMany
+    {
+        return $this->hasMany(Issue::class);
+    }
+
 
 
 
