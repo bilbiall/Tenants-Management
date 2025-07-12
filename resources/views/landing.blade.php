@@ -22,7 +22,11 @@
 
 
 
-    <div class="relative z-10 max-w-3xl mx-auto p-10 text-center fade-in-up">
+    <!--<div class="relative z-10 max-w-3xl mx-auto p-10 text-center fade-in-up">
+     <div class="relative z-10 max-w-3xl mx-auto p-10 text-center fade-in-up">-->
+    <div class="relative z-10 max-w-3xl mx-auto p-10 text-center fade-in-up
+             flex flex-col items-center justify-center min-h-screen">
+
         <!-- ► change start: small home SVG logo + brand text ◄ -->
 <div class="flex items-center justify-center gap-3 mb-6">
     <svg xmlns="http://www.w3.org/2000/svg"
@@ -43,9 +47,14 @@
         <p class="text-gray-200 text-lg mb-10">
             Manage rentals, raise issues, and handle bills – all in one place.
         </p>
+        <a href="{{ route('generic.login') }}"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transform hover:scale-105 transition">
+                Login
+            </a>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-center">
-            <a href="{{ route('filament.tenant.auth.login') }}"
+
+        <!--<div class="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-center">-->
+            <!--<a href="{{ route('filament.tenant.auth.login') }}"
                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transform hover:scale-105 transition">
                 Tenant Login
             </a>
@@ -53,12 +62,19 @@
             <a href="{{ route('filament.admin.auth.login') }}"
                class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transform hover:scale-105 transition">
                 Admin Login
-            </a>
+            </a>-->
+
+
         </div>
 
-        <div class="mt-12 text-sm text-gray-300 drop-shadow-md">
+
+    </div>
+
+    {{-- centered footer --}}
+    <div class="absolute bottom-6 inset-x-0 text-center">
+        <p class="text-sm text-gray-300 drop-shadow-md">
             Powered by <span class="text-white font-medium">Vumaa</span> Digital
-        </div>
+        </p>
     </div>
 
 
