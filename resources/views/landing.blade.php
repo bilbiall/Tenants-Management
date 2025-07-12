@@ -4,6 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tenant Management Portal</title>
+
+    <!-- Primary SEO -->
+<meta name="description"
+      content="Renty – an all‑in‑one portal for landlords and tenants to manage rentals, track invoices & payments, raise maintenance issues, and receive real‑time SMS updates." />
+<meta name="keywords"
+      content="tenant management, rental portal, invoices, payments, maintenance issues, SMS notifications, Renty" />
+<meta name="author" content="Vumaa Digital" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type"        content="website" />
+<meta property="og:url"         content="{{ url('/') }}" />
+<meta property="og:title"       content="Renty – Tenant Management Made Simple" />
+<meta property="og:description" content="Pay rent, download invoices, report issues, and stay informed via instant SMS alerts – all from one sleek dashboard." />
+<meta property="og:image"       content="{{ asset('images/og-cover.jpg') }}" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="Renty – Tenant Management Made Simple" />
+<meta name="twitter:description" content="Manage rentals, bills, and maintenance while enjoying seamless SMS communication between landlords and tenants." />
+<meta name="twitter:image"       content="{{ asset('images/og-cover.jpg') }}" />
+
+<!-- App / theme colours -->
+<meta name="theme-color"  content="#0f172a" />
+<meta name="msapplication-TileColor" content="#0f172a" />
+
+
+
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes fadeInUp {
