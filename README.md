@@ -57,14 +57,18 @@ npm install && npm run build
 ```
 
 ⚙️ 3. Environment Setup
-```
-cp .env.example .env
-php artisan key:generate
-```
+Rename .env.example to .env
 Update .env with your:
 -Database credentials
 -Mail settings
 -SMS gateway credentials
+
+Now generate a key for your project
+```
+cp .env.example .env
+php artisan key:generate
+```
+
 
 🧱 4. Run Migrations & Seeders
 ```
@@ -72,7 +76,38 @@ php artisan migrate --seed
 ```
 This will create the required tables and seed default demo users.
 
-🔌 5. Serve the App
+👤 5. To add a test admin user we shall use tinker
+First initiate tinker
+```
+php artisan tinker
+```
+To have demo users to your database eg. admin, run the code below
+```
+use App\Models\User;
+
+User::create([
+    'name' => 'Admin',
+    'email' => 'admin@example.com',
+    'phone_number' => '0700000000',
+    'email_verified_at' => now(),
+    'password' => bcrypt('Admin@123'),
+    'role' => 'admin',
+]);
+
+```
+this will create an admin user with the details below, for a caretaker role just change the 'role' value above 
+```
+Login Credentials Created
+
+Email: admin@example.com
+
+Password: Admin@123
+
+Role: admin
+```
+
+
+🔌 6. Serve the App
 ```
 php artisan serve
 ```
