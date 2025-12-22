@@ -57,6 +57,8 @@ npm install && npm run build
 ```
 
 ⚙️ 3. Environment Setup
+
+
 Rename .env.example to .env
 Update .env with your:
 -Database credentials
