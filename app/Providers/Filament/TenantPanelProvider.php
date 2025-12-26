@@ -21,6 +21,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Account;
 
+use App\Filament\Tenant\Pages\TenantDashboard;
+
+
 //for user editing profile
 //use Filament\Pages\Auth\EditProfile;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
@@ -52,7 +55,8 @@ class TenantPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\\Filament\\Tenant\\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\\Filament\\Tenant\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                //Pages\Dashboard::class,
+                TenantDashboard::class,   // <- Add this
                 //EditProfile::class, // ✅ Enable user account management
             ])
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
