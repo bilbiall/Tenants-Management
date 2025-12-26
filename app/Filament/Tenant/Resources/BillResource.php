@@ -124,6 +124,12 @@ class BillResource extends Resource
         ];
     }
 
+    // Disable creation from the tenant panel (tenants still use their own resource)
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     //limit tenant to view own bills
     public static function getEloquentQuery(): Builder
     {

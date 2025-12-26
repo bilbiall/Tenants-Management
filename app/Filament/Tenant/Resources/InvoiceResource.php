@@ -95,6 +95,12 @@ class InvoiceResource extends Resource
         ];
     }
 
+    // Disable creation from the admin panel (tenants still use their own resource)
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
