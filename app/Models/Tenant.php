@@ -51,6 +51,11 @@ class Tenant extends Model
         return $this->hasOne(Invoice::class)->latestOfMany();
     }
 
+    //relationship to have the latest payment
+    public function latestPayment()
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
+    }
 
     //relationship with payments
     public function payments()
@@ -79,17 +84,30 @@ class Tenant extends Model
     {
         static::created(function ($tenant) {
             $tenant->house->update(['house_status' => 'Occupied']);
-            // 2. Prepare SMS details
-            $name = $tenant->tenant_name;
-            $phone = $tenant->phone_number;
-            $houseName = $tenant->house->house_name;
-            $rent = $tenant->house->rent_amount;
-            $appName = config('app.name');
+            
+            // Get template from settings
+            $settings = \App\Models\Setting::singleton();
+            $template = $settings->payload['template_tenant_welcome'] ?? 'Hello {tenant_name}, welcome to {app_name}. You were admitted to {house_name} with a monthly rent of KES {rent_amount}';
+            
+            // Replace variables
+            $message = str_replace(
+                ['{tenant_name}', '{app_name}', '{house_name}', '{rent_amount}'],
+                [$tenant->tenant_name, config('app.name'), $tenant->house->house_name, $tenant->house->rent_amount],
+                $template
+            );
 
-            $message = "Hello $name, welcome to $appName. You were admitted to $houseName with a monthly rent of KES $rent";
+            // Send SMS using your helper
+            SmsHelper::sendSms($tenant->phone_number, $message);
 
-            // 3. Send SMS using your helper
-            SmsHelper::sendSms($phone, $message);
+            // Notify admins via database about new tenant admission
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\DatabaseNotification(
+                    'New Tenant Admitted',
+                    "{$tenant->tenant_name} was admitted to {$tenant->house->house_name}",
+                    null
+                ));
+            }
         });
 
         static::updated(function ($tenant) {

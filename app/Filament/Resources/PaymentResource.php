@@ -54,10 +54,18 @@ class PaymentResource extends Resource
                 ->required()
                 ->live()
                 ->afterStateUpdated(function (callable $get, callable $set, $state) {
-                    // 👇 This makes the expected_amount update when an invoice is selected
+                    // When an invoice is selected set expected_amount to the invoice total
                     $invoice = \App\Models\Invoice::find($state);
                     if ($invoice) {
                         $set('expected_amount', $invoice->amount);
+
+                        // Prefer the latest payment's balance if one exists, otherwise fall back to invoice balance or amount
+                        $latestPayment = \App\Models\Payment::where('invoice_id', $invoice->id)->latest()->first();
+                        $currentBalance = $latestPayment?->balance ?? $invoice->balance ?? $invoice->amount;
+                        $set('balance', $currentBalance);
+                        // set balance after payment (current balance minus any entered amount_paid)
+                        $amountPaid = $get('amount_paid') ?? 0;
+                        $set('balance_after_payment', $currentBalance - $amountPaid);
                     }
                 }),
 
@@ -77,7 +85,22 @@ class PaymentResource extends Resource
                     $invoiceId = $get('invoice_id');
                     if (!$invoiceId) return null;
 
-                    return \App\Models\Invoice::find($invoiceId)?->balance;
+                    $invoice = \App\Models\Invoice::find($invoiceId);
+                    if (! $invoice) return null;
+
+                    $latestPayment = \App\Models\Payment::where('invoice_id', $invoiceId)->latest()->first();
+                    return $latestPayment?->balance ?? $invoice->balance ?? $invoice->amount;
+                }),
+
+            // Computed field: shows what balance will be after this payment is applied
+            TextInput::make('balance_after_payment')
+                ->label('Balance After This Payment (KES)')
+                ->disabled()
+                ->reactive()
+                ->default(function (callable $get) {
+                    $currentBalance = $get('balance') ?? 0;
+                    $amountPaid = $get('amount_paid') ?? 0;
+                    return $currentBalance - $amountPaid;
                 }),
 
 
@@ -86,7 +109,13 @@ class PaymentResource extends Resource
             TextInput::make('amount_paid')
                 ->label('Amount Paid')
                 ->numeric()
-                ->required(),
+                ->required()
+                ->reactive()
+                ->afterStateUpdated(function (callable $get, callable $set, $state) {
+                    $currentBalance = $get('balance') ?? 0;
+                    $amountPaid = $state ?? 0;
+                    $set('balance_after_payment', $currentBalance - $amountPaid);
+                }),
 
             // Payment reference
             TextInput::make('reference')

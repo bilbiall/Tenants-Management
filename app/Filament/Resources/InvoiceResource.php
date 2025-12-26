@@ -234,6 +234,7 @@ class InvoiceResource extends Resource
         $billTotal = $bill ? ($bill->water_bill + $bill->trash_bill + $bill->internet_bill) : 0;
 
         $record->total_amount = $houseRent + $billTotal;
+            $record->balance = $record->amount; // ✅ CRITICAL
     }
 
 

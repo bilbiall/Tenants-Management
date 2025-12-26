@@ -74,11 +74,16 @@ class IssueResource extends Resource
         ];
     }
 
+    // Disable creation from the admin panel (tenants still use their own resource)
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListIssues::route('/'),
-            'create' => Pages\CreateIssue::route('/create'),
             'edit' => Pages\EditIssue::route('/{record}/edit'),
         ];
     }

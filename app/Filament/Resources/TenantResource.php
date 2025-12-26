@@ -179,12 +179,12 @@ class TenantResource extends Resource
                         return 'danger'; // Still owing
                     }),*/
                 //include color for overpaid
-                TextColumn::make('latestInvoice.balance')
+                TextColumn::make('latestPayment.balance')
                     ->label('Balance')
                     ->money('KES')
                     ->color(function ($state) {
                         if ($state === null) {
-                            return 'secondary'; // No invoice yet
+                            return 'secondary'; // No payment yet
                         } elseif ($state == 0) {
                             return 'success'; // Fully paid
                         } elseif ($state < 0) {
@@ -201,6 +201,23 @@ class TenantResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('message')
+                    ->label('Message')
+                    ->icon('heroicon-s-chat-bubble-left')
+                    ->color('success')
+                    ->url(function (Tenant $record) {
+                        $phone = $record->phone_number;
+                        // Remove any non-digit characters from phone
+                        $phone = preg_replace('/\D/', '', $phone);
+                        // Ensure it starts with country code (254 for Kenya)
+                        if (!str_starts_with($phone, '254')) {
+                            $phone = '254' . ltrim($phone, '0');
+                        }
+                        // Default message with tenant name
+                        $message = "Hello {$record->tenant_name}, I have a message for you regarding ...";
+                        return 'https://wa.me/' . $phone . '?text=' . urlencode($message);
+                    })
+                    ->openUrlInNewTab(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

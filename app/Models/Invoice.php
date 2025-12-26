@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use App\Helpers\SmsHelper; // if your function is inside a helper class
+use App\Helpers\SmsTemplateHelper;
 use Illuminate\Support\Facades\Config;
 
 
@@ -22,6 +23,7 @@ class Invoice extends Model
         'due_date',
         'amount',
         'status',
+        'balance',
         'comment',
     ];
 
@@ -67,20 +69,24 @@ class Invoice extends Model
 
         static::created(function ($invoice) {
             $tenant = $invoice->tenant;
-            $house = $tenant->house;
 
-            $invoiceNumber = $invoice->invoice_number;
-            $houseName = $house->house_name;
-            $totalAmount = number_format($invoice->total_amount);
-            $dueDate = \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y');
-            $appName = Config::get('app.name');
+            $message = SmsTemplateHelper::render('template_invoice', [
+                'tenant_name' => $tenant->tenant_name,
+                'invoice_number' => $invoice->invoice_number,
+                'amount' => number_format($invoice->amount),
+                'due_date' => \Carbon\Carbon::parse($invoice->due_date)->format('d/m/Y'),
+            ]);
 
-            // Compose message
-            $message = "Invoice $invoiceNumber: Your rent for $houseName is KES $totalAmount. Due by $dueDate. Please pay promptly. – $appName";
-
-            // Send SMS (using helper)
-            //sendSms($tenant->phone_number, $message); // If global helper
-            SmsHelper::sendSms($tenant->phone_number, $message); // If inside SmsHelper class
+            SmsHelper::sendSms($tenant->phone_number, $message);
+            // Send database notification to admins
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\DatabaseNotification(
+                    'New Invoice Created',
+                    "Invoice {$invoice->invoice_number} created for {$tenant->tenant_name}",
+                    null
+                ));
+            }
         });
     }
 }

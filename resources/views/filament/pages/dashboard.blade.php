@@ -76,35 +76,35 @@
             <div class="w-full max-w-4xl">
             <h2 class="text-lg font-semibold mb-4">Recent Payments</h2>
 
-            <div class="overflow-x-auto bg-white shadow rounded">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+            <div class="overflow-x-auto shadow rounded dark:bg-gray-900 bg-white">
+                <table class="min-w-full divide-y dark:divide-gray-700 divide-gray-200">
+                    <thead class="dark:bg-gray-800 bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tenant</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount Paid</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-500 uppercase tracking-wider">Tenant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-500 uppercase tracking-wider">Amount Paid</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-500 uppercase tracking-wider">Reference</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium dark:text-gray-400 text-gray-500 uppercase tracking-wider">Date</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="dark:bg-gray-900 bg-white divide-y dark:divide-gray-700 divide-gray-200">
                         @forelse ($recentPayments as $payment)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                            <tr class="dark:hover:bg-gray-800 hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-300 text-gray-900 font-medium">
                                     {{ $payment->tenant->tenant_name ?? '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">
                                     KES {{ number_format($payment->amount_paid) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-300 text-gray-900">
                                     {{ $payment->reference ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-400 text-gray-500">
                                     {{ \Carbon\Carbon::parse($payment->payment_date)->format('d M Y') }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No recent payments found.</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-sm dark:text-gray-400 text-gray-500">No recent payments found.</td>
                             </tr>
                         @endforelse
                     </tbody>

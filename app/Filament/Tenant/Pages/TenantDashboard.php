@@ -39,7 +39,17 @@ class TenantDashboard extends Page
         $this->recentInvoices = Invoice::where('tenant_id', $tenant->id)
             ->latest()
             ->take(5)
-            ->get();
+            ->get()
+            ->map(function ($invoice) {
+                // Get the latest payment balance for each invoice
+                $latestPayment = Payment::where('invoice_id', $invoice->id)
+                    ->latest()
+                    ->first();
+                
+                // Store the payment balance (or invoice balance if no payments)
+                $invoice->payment_balance = $latestPayment?->balance ?? $invoice->balance;
+                return $invoice;
+            });
 
         // Get a list of the most recent payments
         $this->recentPayments = Payment::where('tenant_id', $tenant->id)

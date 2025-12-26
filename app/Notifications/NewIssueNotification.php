@@ -3,18 +3,10 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-namespace App\Notifications;
-
-use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\DatabaseMessage;
 use App\Models\Issue;
 
-//notif
 class NewIssueNotification extends Notification
 {
     use Queueable;
@@ -23,7 +15,7 @@ class NewIssueNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database']; // Store in DB so it appears in Filament's notification panel
+        return ['database'];
     }
 
     public function toDatabase(object $notifiable): array
@@ -31,9 +23,7 @@ class NewIssueNotification extends Notification
         return [
             'title' => 'New Issue Reported',
             'message' => "{$this->issue->tenant->tenant_name} reported: {$this->issue->title}",
-            //'url' => route('filament.admin.resources.issues.view', ['record' => $this->issue->id]),
-            'url' => route('filament.admin.resources.issues.edit', ['record' => $this->issue->id])
-
+            'url' => null,
         ];
     }
 }

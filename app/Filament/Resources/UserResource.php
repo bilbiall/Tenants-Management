@@ -72,7 +72,16 @@ class UserResource extends Resource
             ->columns([
                 //column heads
                 TextColumn::make('name'),
-                TextColumn::make('email')
+                TextColumn::make('email'),
+                TextColumn::make('role')
+                    ->label('Role')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'admin' => 'danger',
+                        'caretaker' => 'warning',
+                        'tenant' => 'info',
+                        default => 'gray',
+                    }),
             ])
             ->filters([
                 //

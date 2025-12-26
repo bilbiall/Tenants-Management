@@ -10,6 +10,7 @@ use App\Models\Tenant;
 use App\Models\Invoice;
 
 use App\Helpers\SmsHelper;
+use App\Helpers\SmsTemplateHelper;
 
 
 class Payment extends Model
@@ -71,9 +72,53 @@ class Payment extends Model
         $tenant->balance = $invoiceBalance;
         $tenant->save();
 
-        // 🔸 Send SMS confirmation
-        $message = "Hi {$tenant->tenant_name}, we've received your payment of KES {$payment->amount_paid} for Invoice #{$invoice->invoice_number}. Thank you. - " . config('app.name');
+        // 🔸 Send SMS confirmation (supports {balance})
+        $settings = \App\Models\Setting::singleton();
+        $template = $settings->payload['template_payment'] ?? 'Hi {tenant_name}, we\'ve received your payment of KES {amount_paid} for Invoice #{invoice_number}. Your remaining balance is KES {balance}. Thank you. - {app_name}';
+
+        // Support multiple placeholder variants in stored templates (e.g. {amount}, {amount_paid})
+        $placeholders = [
+            '{tenant_name}',
+            '{tenant}',
+            '{amount_paid}',
+            '{amount}',
+            '{invoice_number}',
+            '{invoice_no}',
+            '{balance}',
+            '{app_name}',
+        ];
+
+        $replacements = [
+            $tenant->tenant_name,
+            $tenant->tenant_name,
+            number_format($payment->amount_paid),
+            number_format($payment->amount_paid),
+            $invoice->invoice_number,
+            $invoice->invoice_number,
+            number_format($invoiceBalance),
+            config('app.name'),
+        ];
+
+        $message = str_replace($placeholders, $replacements, $template);
         \App\Helpers\SmsHelper::sendSms($tenant->phone_number, $message);
+        // Also create database notification for admins and tenant user
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\DatabaseNotification(
+                'Payment Received',
+                "Payment of KES {$payment->amount_paid} received for Invoice {$invoice->invoice_number}",
+                null
+            ));
+        }
+
+        // Notify tenant user (if a linked user exists)
+        if ($tenantUser = $tenant->user ?? null) {
+            $tenantUser->notify(new \App\Notifications\DatabaseNotification(
+                'Payment Confirmation',
+                "We received your payment of KES {$payment->amount_paid}. Remaining balance: KES {$invoiceBalance}",
+                null
+            ));
+        }
     });
     /*static::created(function ($payment) {
         $invoice = $payment->invoice;
