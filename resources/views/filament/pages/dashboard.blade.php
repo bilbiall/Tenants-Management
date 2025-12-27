@@ -4,7 +4,6 @@
     <div class="space-y-6">
         {{-- Dashboard Header --}}
         <div class="space-y-2">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
             <p class="text-gray-500 dark:text-gray-400">Welcome back! Here's a snapshot of your rental business.</p>
         </div>
 
@@ -201,8 +200,10 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        max: Math.max(...@json($monthlyRevenueData['revenues'])) * 1.1 || 10000,
                         ticks: {
                             color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
+                            stepSize: Math.ceil(Math.max(...@json($monthlyRevenueData['revenues'])) / 5) || 2000,
                         },
                         grid: {
                             color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb',
@@ -222,16 +223,25 @@
 
         // Invoice Status Chart
         const statusCtx = document.getElementById('statusChart').getContext('2d');
+        const paidCount = {{ $invoiceStatusData['paid'] }};
+        const unpaidCount = {{ $invoiceStatusData['unpaid'] }};
+        const partialCount = {{ $invoiceStatusData['partial'] }};
+        const totalInvoices = paidCount + unpaidCount + partialCount;
+        
         new Chart(statusCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Paid', 'Unpaid', 'Partial'],
+                labels: [
+                    `Paid (${paidCount})`,
+                    `Unpaid (${unpaidCount})`,
+                    `Partial (${partialCount})`
+                ],
                 datasets: [{
-                    data: [{{ $invoiceStatusData['paid'] }}, {{ $invoiceStatusData['unpaid'] }}, {{ $invoiceStatusData['partial'] }}],
+                    data: [paidCount, unpaidCount, partialCount],
                     backgroundColor: [
-                        'rgba(34, 197, 94, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(234, 179, 8, 0.8)',
+                        'rgba(34, 197, 94, 0.85)',
+                        'rgba(239, 68, 68, 0.85)',
+                        'rgba(234, 179, 8, 0.85)',
                     ],
                     borderColor: [
                         '#22c55e',
@@ -250,6 +260,19 @@
                         labels: {
                             color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
                             padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const percentage = totalInvoices > 0 ? ((value / totalInvoices) * 100).toFixed(1) : 0;
+                                return `${label}: ${percentage}%`;
+                            }
                         }
                     }
                 }
@@ -285,8 +308,10 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        max: Math.max(...@json($activityTrendData['activities'])) * 1.2 || 10,
                         ticks: {
                             color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
+                            stepSize: Math.max(1, Math.ceil(Math.max(...@json($activityTrendData['activities'])) / 4)),
                         },
                         grid: {
                             color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb',

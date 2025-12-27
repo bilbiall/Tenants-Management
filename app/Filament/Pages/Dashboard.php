@@ -16,6 +16,8 @@ class Dashboard extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-s-home';
 
+    protected static ?string $title = '';
+
     protected static string $view = 'filament.pages.dashboard';
 
     //dashboard view
