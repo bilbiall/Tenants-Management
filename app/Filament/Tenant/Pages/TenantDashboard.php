@@ -11,8 +11,19 @@ class TenantDashboard extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-s-home';
 
+    protected static ?string $navigationLabel = 'Dashboard';
+
+    protected static ?string $title = '';
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return true;
+    }
+
     // This determines which Blade view to render
     protected static string $view = 'filament.tenant.pages.tenant-dashboard';
+
+    
 
     // Public properties to pass data to the view
     public $houseName;
