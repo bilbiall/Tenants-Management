@@ -25,11 +25,8 @@ class Logs extends Page
         'send_invoice' => 'Send Invoice',
         'record_bill' => 'Record Bill',
         'record_payment' => 'Record Payment',
-        'new_tenant' => 'New Tenant',
         'create_tenant' => 'New Tenant',
-        'new_house' => 'New House',
         'create_house' => 'New House',
-        'new_location' => 'New Location',
         'create_location' => 'New Location',
     ];
 
