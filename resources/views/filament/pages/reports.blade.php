@@ -84,14 +84,15 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total: {{ count($invoices) }} invoice(s)</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="exportToPDF()" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm text-sm font-medium transition">
+                    {{-- Export buttons disabled for now - uncomment when PDF/Excel libraries are installed --}}
+                    {{-- <button onclick="exportToPDF()" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-sm text-sm font-medium transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Export PDF
                     </button>
                     <button onclick="exportToExcel()" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm text-sm font-medium transition">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         Export Excel
-                    </button>
+                    </button> --}}
                 </div>
             </div>
 
@@ -234,17 +235,18 @@
             });
         }
 
-        function exportToPDF() {
-            const url = new URL(window.location);
-            url.searchParams.set('export', 'pdf');
-            window.location.href = url.toString();
-        }
-
-        function exportToExcel() {
-            const url = new URL(window.location);
-            url.searchParams.set('export', 'excel');
-            window.location.href = url.toString();
-        }
+        {{-- Export functions disabled for now --}}
+        // function exportToPDF() {
+        //     const url = new URL(window.location);
+        //     url.searchParams.set('export', 'pdf');
+        //     window.location.href = url.toString();
+        // }
+        //
+        // function exportToExcel() {
+        //     const url = new URL(window.location);
+        //     url.searchParams.set('export', 'excel');
+        //     window.location.href = url.toString();
+        // }
     </script>
 </x-filament::page>
 </div>

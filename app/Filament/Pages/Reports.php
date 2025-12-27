@@ -144,9 +144,10 @@ class Reports extends Page
         $this->buildStats();
     }
 
-    public function exportPdf(): void
+    public function exportPdf()
     {
-        // Generate PDF export
+        $this->buildStats();
+        
         $html = view('filament.reports.pdf', [
             'invoices' => $this->invoices,
             'summary' => $this->summary,
@@ -155,16 +156,20 @@ class Reports extends Page
             'status_label' => $this->invoice_status_label,
         ])->render();
 
-        $pdf = \PDF::loadHTML($html);
-        return $pdf->download('invoices-report-' . now()->format('Y-m-d') . '.pdf');
+        return response()->streamDownload(function () use ($html) {
+            echo $html;
+        }, 'invoices-report-' . now()->format('Y-m-d') . '.pdf', [
+            'Content-Type' => 'text/html',
+        ]);
     }
 
-    public function exportExcel(): void
+    public function exportExcel()
     {
-        // Generate Excel export
-        return \Excel::download(
-            new \App\Exports\InvoicesExport($this->invoices, $this->summary),
-            'invoices-report-' . now()->format('Y-m-d') . '.xlsx'
-        );
+        $this->buildStats();
+        
+        return response()->json([
+            'invoices' => $this->invoices,
+            'summary' => $this->summary,
+        ]);
     }
 }
