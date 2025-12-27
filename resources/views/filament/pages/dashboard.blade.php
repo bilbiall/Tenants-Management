@@ -79,13 +79,17 @@
             {{-- Monthly Revenue Chart --}}
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue Trend (Last 7 Months)</h3>
-                <canvas id="revenueChart" height="80"></canvas>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
             </div>
 
             {{-- Invoice Status Chart --}}
             <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Invoice Status Distribution</h3>
-                <canvas id="statusChart" height="80"></canvas>
+                <div style="position: relative; height: 300px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -94,7 +98,9 @@
             {{-- Activity Trend --}}
             <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Activity Trend (Last 7 Days)</h3>
-                <canvas id="activityChart" height="80"></canvas>
+                <div style="position: relative; height: 250px;">
+                    <canvas id="activityChart"></canvas>
+                </div>
             </div>
 
             {{-- Quick Stats --}}
