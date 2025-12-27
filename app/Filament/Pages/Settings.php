@@ -107,7 +107,34 @@ class Settings extends Page implements HasForms
 
                         Forms\Components\Tabs\Tab::make('Payments')
                             ->schema([
-                                // Future payment gateway settings (M-Pesa, etc.)
+                                Forms\Components\TextInput::make('pesapal.consumer_key')
+                                    ->label('Pesapal Consumer Key')
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('pesapal.consumer_secret')
+                                    ->label('Pesapal Consumer Secret')
+                                    ->password()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('pesapal.webhook_secret')
+                                    ->label('Pesapal Webhook Secret')
+                                    ->password()
+                                    ->maxLength(255),
+
+                                Forms\Components\TextInput::make('pesapal.callback_url')
+                                    ->label('Pesapal Callback URL')
+                                    ->helperText('Public webhook/callback URL Pesapal will call (e.g., https://example.com/api/pesapal/webhook)')
+                                    ->url()
+                                    ->maxLength(1024),
+
+                                Forms\Components\Toggle::make('pesapal.sandbox')
+                                    ->label('Use Pesapal Sandbox')
+                                    ->default(true),
+
+                                Forms\Components\TextInput::make('pesapal.currency')
+                                    ->label('Currency')
+                                    ->default('KES')
+                                    ->maxLength(10),
                             ]),
                     ]),
             ]);

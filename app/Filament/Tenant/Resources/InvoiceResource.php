@@ -19,6 +19,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\Action;
+use Illuminate\Support\Str;
 
 
 
@@ -76,6 +79,24 @@ class InvoiceResource extends Resource
                             $query->whereMonth('invoice_date', $data['month']->format('m'))
                                 ->whereYear('invoice_date', $data['month']->format('Y'));
                         }
+                    }),
+            ])
+            ->actions([
+                Action::make('pay')
+                    ->label('Pay Now')
+                    ->button()
+                    ->form([
+                        TextInput::make('amount')
+                            ->label('Amount to pay (KES)')
+                            ->numeric()
+                            ->required()
+                            ->default(fn ($record) => $record->balance),
+                    ])
+                    ->modalWidth('md')
+                    ->action(function (Invoice $record, array $data, $livewire) {
+                        $amount = $data['amount'] ?? 0;
+                        // Redirect to a payment initiation route which will handle Pesapal integration.
+                        return redirect()->route('tenant.payments.initiate', ['invoice' => $record->id, 'amount' => $amount]);
                     }),
             ])
            /* ->actions([
