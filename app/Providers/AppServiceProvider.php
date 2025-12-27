@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Events\Login;
 use App\Helpers\ActivityLogger;
+use App\Models\Tenant;
+use App\Observers\TenantObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Tenant observer
+        Tenant::observe(TenantObserver::class);
+
         // Record user login events
         Event::listen(Login::class, function (Login $event) {
             try {
