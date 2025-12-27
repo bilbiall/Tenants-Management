@@ -107,14 +107,13 @@
                             <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600 dark:text-gray-300">Paid</th>
                             <th class="px-4 py-3 text-right text-sm font-semibold text-gray-600 dark:text-gray-300">Balance</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Status</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-300">Days</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($invoices as $invoice)
                             @php
-                                $daysOverdue = \Carbon\Carbon::parse($invoice->due_date)->diffInDays(\Carbon\Carbon::now());
-                                $isOverdue = \Carbon\Carbon::parse($invoice->due_date)->lt(\Carbon\Carbon::now()) && $invoice->status !== 'paid';
+                                $amountPaid = $invoice->payments->sum('amount_paid') ?? 0;
+                                $balance = ($invoice->amount ?? 0) - $amountPaid;
                                 $statusColor = match($invoice->status) {
                                     'paid' => 'text-green-600 bg-green-50 dark:bg-green-900/20',
                                     'partial' => 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20',
@@ -130,24 +129,17 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">{{ \Carbon\Carbon::parse($invoice->due_date)->format('d M Y') }}</td>
                                 <td class="px-4 py-3 text-sm text-right font-medium text-gray-900 dark:text-gray-200">KES {{ number_format($invoice->amount ?? 0) }}</td>
-                                <td class="px-4 py-3 text-sm text-right text-green-600 font-medium">KES {{ number_format($invoice->payments->sum('amount_paid') ?? 0) }}</td>
-                                <td class="px-4 py-3 text-sm text-right font-medium {{ $invoice->balance > 0 ? 'text-red-600' : 'text-green-600' }}">KES {{ number_format($invoice->balance ?? 0) }}</td>
+                                <td class="px-4 py-3 text-sm text-right text-green-600 font-medium">KES {{ number_format($amountPaid) }}</td>
+                                <td class="px-4 py-3 text-sm text-right font-medium {{ $balance > 0 ? 'text-red-600' : 'text-green-600' }}">KES {{ number_format($balance) }}</td>
                                 <td class="px-4 py-3 text-sm">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
                                         {{ ucfirst($invoice->status ?? 'n/a') }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                    @if($isOverdue)
-                                        <span class="font-semibold text-red-600">{{ $daysOverdue }} days overdue</span>
-                                    @else
-                                        <span>{{ \Carbon\Carbon::parse($invoice->due_date)->diffInDays(\Carbon\Carbon::now(), false) }} days</span>
-                                    @endif
-                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No invoices found for the selected filters.</td>
+                                <td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No invoices found for the selected filters.</td>
                             </tr>
                         @endforelse
                     </tbody>
