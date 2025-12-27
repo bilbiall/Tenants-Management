@@ -23,6 +23,8 @@ class Reports extends Page
     public $summary = [];
     public $tenant_search;
     public $invoices = [];
+    public $invoice_status = '';
+    public $invoice_status_label = '';
 
     public function mount(): void
     {
@@ -30,6 +32,7 @@ class Reports extends Page
         $this->to = request()->query('to') ? Carbon::parse(request()->query('to')) : Carbon::now();
         $this->from = request()->query('from') ? Carbon::parse(request()->query('from')) : (clone $this->to)->subMonths(5)->startOfMonth();
         $this->tenant_search = request()->query('tenant_search');
+        $this->invoice_status = request()->query('invoice_status', '');
 
         $this->buildStats();
     }
@@ -85,6 +88,39 @@ class Reports extends Page
             });
         }
 
+        // Apply invoice status filters
+        if ($this->invoice_status) {
+            switch ($this->invoice_status) {
+                case 'overdue':
+                    $invoicesQuery->where('status', '!=', 'paid')
+                        ->where('due_date', '<', Carbon::now()->toDateString());
+                    $this->invoice_status_label = 'Overdue';
+                    break;
+                case 'due':
+                    $invoicesQuery->where('status', '!=', 'paid')
+                        ->whereDate('due_date', '=', Carbon::now()->toDateString());
+                    $this->invoice_status_label = 'Due Today';
+                    break;
+                case 'upcoming':
+                    $invoicesQuery->where('status', '!=', 'paid')
+                        ->where('due_date', '>', Carbon::now()->toDateString());
+                    $this->invoice_status_label = 'Upcoming';
+                    break;
+                case 'paid':
+                    $invoicesQuery->where('status', 'paid');
+                    $this->invoice_status_label = 'Paid';
+                    break;
+                case 'partial':
+                    $invoicesQuery->where('status', 'partial');
+                    $this->invoice_status_label = 'Partial';
+                    break;
+                case 'unpaid':
+                    $invoicesQuery->where('status', 'unpaid');
+                    $this->invoice_status_label = 'Unpaid';
+                    break;
+            }
+        }
+
         $this->invoices = $invoicesQuery->get();
     }
 
@@ -97,6 +133,41 @@ class Reports extends Page
     {
         $this->buildStats();
     }
+
+    public function updatedTenantSearch(): void
+    {
+        $this->buildStats();
+    }
+
+    public function updatedInvoiceStatus(): void
+    {
+        $this->buildStats();
+    }
+
+    public function exportPdf(): void
+    {
+        // Generate PDF export
+        $html = view('filament.reports.pdf', [
+            'invoices' => $this->invoices,
+            'summary' => $this->summary,
+            'from' => $this->from,
+            'to' => $this->to,
+            'status_label' => $this->invoice_status_label,
+        ])->render();
+
+        $pdf = \PDF::loadHTML($html);
+        return $pdf->download('invoices-report-' . now()->format('Y-m-d') . '.pdf');
+    }
+
+    public function exportExcel(): void
+    {
+        // Generate Excel export
+        return \Excel::download(
+            new \App\Exports\InvoicesExport($this->invoices, $this->summary),
+            'invoices-report-' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
+}
 
     public function updatedTenantSearch(): void
     {
