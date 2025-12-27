@@ -18,7 +18,7 @@ class Dashboard extends Page
 
     protected static ?string $title = '';
 
-    protected static function shouldRegisterNavigation(): bool
+    public static function shouldRegisterNavigation(): bool
     {
         return false;
     }
