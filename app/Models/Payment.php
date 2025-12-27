@@ -119,6 +119,15 @@ class Payment extends Model
                 null
             ));
         }
+
+        // Record activity log for payment
+        try {
+            $actor = auth()->id() ?? null;
+            $detail = "Payment of KES {$payment->amount_paid} for Invoice {$invoice->invoice_number} (Tenant: {$tenant->tenant_name})";
+            \App\Helpers\ActivityLogger::log('record_payment', $actor, $detail);
+        } catch (\Throwable $e) {
+            // swallow
+        }
     });
     /*static::created(function ($payment) {
         $invoice = $payment->invoice;

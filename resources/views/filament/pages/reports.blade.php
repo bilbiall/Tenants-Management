@@ -1,26 +1,27 @@
+<div>
 <x-filament::page>
     <div class="space-y-6">
         <div class="flex gap-4 items-end">
-            <form method="GET" class="flex gap-2 items-end">
-                <div>
+            <form method="GET" class="flex flex-wrap gap-2 items-end">
+                <div class="w-full sm:w-auto">
                     <label class="block text-sm text-gray-500 dark:text-gray-300">From</label>
-                    <input type="month" name="from" value="{{ request()->query('from') ? \Carbon\Carbon::parse(request()->query('from'))->format('Y-m') : \Carbon\Carbon::parse($from)->format('Y-m') }}" class="mt-1 block border rounded px-2 py-1" />
+                    <input type="month" name="from" value="{{ request()->query('from') ? \Carbon\Carbon::parse(request()->query('from'))->format('Y-m') : \Carbon\Carbon::parse($from)->format('Y-m') }}" class="mt-1 block w-full sm:w-40 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div>
+                <div class="w-full sm:w-auto">
                     <label class="block text-sm text-gray-500 dark:text-gray-300">To</label>
-                    <input type="month" name="to" value="{{ request()->query('to') ? \Carbon\Carbon::parse(request()->query('to'))->format('Y-m') : \Carbon\Carbon::parse($to)->format('Y-m') }}" class="mt-1 block border rounded px-2 py-1" />
+                    <input type="month" name="to" value="{{ request()->query('to') ? \Carbon\Carbon::parse(request()->query('to'))->format('Y-m') : \Carbon\Carbon::parse($to)->format('Y-m') }}" class="mt-1 block w-full sm:w-40 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div>
+                <div class="w-full sm:w-64">
                     <label class="block text-sm text-gray-500 dark:text-gray-300">Tenant</label>
-                    <input type="search" name="tenant_search" placeholder="Search tenant name or phone" value="{{ request()->query('tenant_search', $tenant_search ?? '') }}" class="mt-1 block border rounded px-2 py-1 w-64" />
+                    <input type="search" name="tenant_search" placeholder="Search tenant name or phone" value="{{ request()->query('tenant_search', $tenant_search ?? '') }}" class="mt-1 block w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
-                <div>
-                    <button class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded">Apply</button>
+                <div class="w-full sm:w-auto">
+                    <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-3 py-2 shadow-sm hover:brightness-95 rounded border border-transparent focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 bg-blue-600 text-white">Apply</button>
                 </div>
-            </form>
-        </div>
+                </form>
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="p-4 bg-white dark:bg-gray-900 shadow rounded">
                 <p class="text-sm text-gray-500 dark:text-gray-300">Total Invoiced</p>
                 <p class="text-2xl font-bold">KES {{ number_format($summary['total_invoiced'] ?? 0) }}</p>
@@ -33,9 +34,9 @@
                 <p class="text-sm text-gray-500 dark:text-gray-300">Outstanding</p>
                 <p class="text-2xl font-bold text-red-600">KES {{ number_format($summary['outstanding'] ?? 0) }}</p>
             </div>
-        </div>
+            </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="p-4 bg-white dark:bg-gray-900 shadow rounded" style="height:340px;">
                 <h3 class="font-semibold mb-2 dark:text-gray-100">Invoices vs Payments</h3>
                 <div style="height:280px;">
@@ -49,9 +50,9 @@
                     <canvas id="chartPayments" style="height:100%"></canvas>
                 </div>
             </div>
-        </div>
+            </div>
 
-        <div class="mt-6 bg-white dark:bg-gray-900 shadow rounded p-4">
+            <div class="mt-6 bg-white dark:bg-gray-900 shadow rounded p-4">
             <h3 class="font-semibold mb-3 dark:text-gray-100">Invoices</h3>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -81,8 +82,8 @@
                     </tbody>
                 </table>
             </div>
+            </div>
         </div>
-
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -121,3 +122,4 @@
         }
     </script>
 </x-filament::page>
+</div>

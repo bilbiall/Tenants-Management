@@ -38,7 +38,7 @@ class PaymentResource extends Resource
         return $table
             ->columns([
                 //for tenants view
-                TextColumn::make('tenant.tenant_name')->label('Tenant')->searchable(),
+                //TextColumn::make('tenant.tenant_name')->label('Tenant')->searchable(),
                 TextColumn::make('invoice.invoice_number')->label('Invoice'),
                 TextColumn::make('amount_paid')->money('KES'),
                 //TextColumn::make('balance')->label('Balance')->money('KES'),
@@ -72,9 +72,9 @@ class PaymentResource extends Resource
                         }
                     }),
             ])
-            ->actions([
+           /*  ->actions([
                 Tables\Actions\EditAction::make(),
-            ])
+            ]) */
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

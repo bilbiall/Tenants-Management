@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 //use helper for sending sms
 use App\Helpers\SmsHelper;
+use App\Helpers\ActivityLogger;
 
 use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -107,6 +108,14 @@ class Tenant extends Model
                     "{$tenant->tenant_name} was admitted to {$tenant->house->house_name}",
                     null
                 ));
+            }
+
+            // Log tenant creation
+            try {
+                $actor = auth()->id() ?? null;
+                ActivityLogger::log('create_tenant', $actor, "New tenant {$tenant->tenant_name} admitted to {$tenant->house->house_name}");
+            } catch (\Throwable $e) {
+                // ignore logging errors
             }
         });
 

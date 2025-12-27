@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Helpers\SmsHelper; // if your function is inside a helper class
 use App\Helpers\SmsTemplateHelper;
 use Illuminate\Support\Facades\Config;
+use App\Helpers\ActivityLogger;
 
 
 
@@ -86,6 +87,14 @@ class Invoice extends Model
                     "Invoice {$invoice->invoice_number} created for {$tenant->tenant_name}",
                     null
                 ));
+            }
+
+            // Record activity log (who performed the action if available)
+            try {
+                $actor = auth()->id() ?? null;
+                ActivityLogger::log('send_invoice', $actor, "Invoice {$invoice->invoice_number} created for {$tenant->tenant_name}");
+            } catch (\Throwable $e) {
+                // don't break invoice creation on logging failure
             }
         });
     }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Helpers\ActivityLogger;
 
 
 class House extends Model
@@ -30,5 +31,18 @@ class House extends Model
     public function tenant()
     {
         return $this->hasOne(Tenant::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($house) {
+            try {
+                $actor = auth()->id() ?? null;
+                $details = "House created: {$house->house_name} (Rent: {$house->rent_amount})";
+                ActivityLogger::log('create_house', $actor, $details);
+            } catch (\Throwable $e) {
+                // ignore logging errors
+            }
+        });
     }
 }
