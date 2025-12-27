@@ -168,9 +168,3 @@ class Reports extends Page
         );
     }
 }
-
-    public function updatedTenantSearch(): void
-    {
-        $this->buildStats();
-    }
-}
