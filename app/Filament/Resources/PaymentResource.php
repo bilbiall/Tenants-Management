@@ -197,6 +197,7 @@ class PaymentResource extends Resource
             ->columns([
                 //
                 TextColumn::make('tenant.tenant_name')->label('Tenant')->searchable(),
+                TextColumn::make('payment_reference')->label('Reference')->searchable(),
                 TextColumn::make('invoice.invoice_number')->label('Invoice'),
                 TextColumn::make('amount_paid')->money('KES'),
                 //TextColumn::make('balance')->label('Balance')->money('KES'),

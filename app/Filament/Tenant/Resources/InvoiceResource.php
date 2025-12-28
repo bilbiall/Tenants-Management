@@ -86,17 +86,43 @@ class InvoiceResource extends Resource
                     ->label('Pay Now')
                     ->button()
                     ->form([
+                        Forms\Components\Select::make('payment_method')
+                            ->label('Payment Method')
+                            ->options([
+                                'mpesa' => 'M-Pesa (STK Push)',
+                                'pesapal' => 'Pesapal',
+                            ])
+                            ->required()
+                            ->default('mpesa'),
                         TextInput::make('amount')
                             ->label('Amount to pay (KES)')
                             ->numeric()
                             ->required()
                             ->default(fn ($record) => $record->balance),
+                        TextInput::make('phone_number')
+                            ->label('Phone Number (for M-Pesa)')
+                            ->placeholder('0712345678 or +254712345678')
+                            ->helperText('Required for M-Pesa payment'),
                     ])
                     ->modalWidth('md')
+                    ->modalHeading('Pay Invoice')
+                    ->modalButton('Continue to Payment')
                     ->action(function (Invoice $record, array $data, $livewire) {
                         $amount = $data['amount'] ?? 0;
-                        // Redirect to a payment initiation route which will handle Pesapal integration.
-                        return redirect()->route('tenant.payments.initiate', ['invoice' => $record->id, 'amount' => $amount]);
+                        $method = $data['payment_method'] ?? 'mpesa';
+
+                        if ($method === 'mpesa') {
+                            return redirect()->route('tenant.mpesa.initiate', [
+                                'invoice' => $record->id,
+                                'amount' => $amount,
+                                'phone_number' => $data['phone_number'] ?? '',
+                            ]);
+                        } else {
+                            return redirect()->route('tenant.payments.initiate', [
+                                'invoice' => $record->id,
+                                'amount' => $amount,
+                            ]);
+                        }
                     }),
             ])
            /* ->actions([

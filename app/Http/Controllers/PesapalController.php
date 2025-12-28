@@ -80,7 +80,7 @@ class PesapalController extends Controller
                     ]);
                     $pending->status = 'completed';
                     $pending->save();
-                    return redirect('/')->with('success', "Payment of KES {$payment->amount_paid} recorded for Invoice {$invoice->invoice_number}.");
+                    return redirect('/tenant/payments')->with('success', "Payment of KES {$payment->amount_paid} recorded for Invoice {$invoice->invoice_number}.");
                 }
             }
         }
@@ -198,5 +198,28 @@ class PesapalController extends Controller
         $pending->save();
 
         return response()->json(['message' => 'processed'], 200);
+    }
+
+    /**
+     * Browser redirect handler after tenant completes checkout on Pesapal.
+     * Shows a brief thank-you popup then redirects tenant to their payments page.
+     * This is intentionally simple — authoritative payment recording happens via the
+     * webhook/IPN handlers which verify signatures. The browser return is UX-only.
+     */
+    public function callbackRedirect(Request $request)
+    {
+        $reference = $request->query('reference') ?? $request->query('merchant_reference') ?? null;
+        $pendingId = $request->query('pending_id') ?? null;
+
+        $message = 'Thank you — your payment is being processed. You will be redirected shortly.';
+
+        // Optionally include small detail if available
+        if ($reference) {
+            $message = 'Thank you — payment reference ' . e($reference) . ' received. Processing now.';
+        } elseif ($pendingId) {
+            $message = 'Thank you — processing your payment now.';
+        }
+
+        return response()->view('pesapal.thankyou', ['message' => $message]);
     }
 }

@@ -107,34 +107,83 @@ class Settings extends Page implements HasForms
 
                         Forms\Components\Tabs\Tab::make('Payments')
                             ->schema([
-                                Forms\Components\TextInput::make('pesapal.consumer_key')
-                                    ->label('Pesapal Consumer Key')
-                                    ->maxLength(255),
+                                // Pesapal Settings
+                                Forms\Components\Section::make('Pesapal')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('pesapal.consumer_key')
+                                            ->label('Pesapal Consumer Key')
+                                            ->maxLength(255),
 
-                                Forms\Components\TextInput::make('pesapal.consumer_secret')
-                                    ->label('Pesapal Consumer Secret')
-                                    ->password()
-                                    ->maxLength(255),
+                                        Forms\Components\TextInput::make('pesapal.consumer_secret')
+                                            ->label('Pesapal Consumer Secret')
+                                            ->password()
+                                            ->maxLength(255),
 
-                                Forms\Components\TextInput::make('pesapal.webhook_secret')
-                                    ->label('Pesapal Webhook Secret')
-                                    ->password()
-                                    ->maxLength(255),
+                                        Forms\Components\TextInput::make('pesapal.webhook_secret')
+                                            ->label('Pesapal Webhook Secret')
+                                            ->password()
+                                            ->maxLength(255),
 
-                                Forms\Components\TextInput::make('pesapal.callback_url')
-                                    ->label('Pesapal Callback URL')
-                                    ->helperText('Public webhook/callback URL Pesapal will call (e.g., https://example.com/api/pesapal/webhook)')
-                                    ->url()
-                                    ->maxLength(1024),
+                                        Forms\Components\TextInput::make('pesapal.ipn_id')
+                                            ->label('Pesapal IPN ID')
+                                            ->helperText('Register via Pesapal API: POST /api/3/notification-urls. Sandbox and Live have separate IPN IDs.')
+                                            ->placeholder('e.g., a12b34cd-5678-90ef-aaaa-bbbbccccdddd')
+                                            ->maxLength(255),
 
-                                Forms\Components\Toggle::make('pesapal.sandbox')
-                                    ->label('Use Pesapal Sandbox')
-                                    ->default(true),
+                                        Forms\Components\TextInput::make('pesapal.callback_url')
+                                            ->label('Pesapal Callback URL')
+                                            ->helperText('Public webhook/callback URL Pesapal will call (e.g., https://example.com/api/pesapal/webhook)')
+                                            ->url()
+                                            ->maxLength(1024),
 
-                                Forms\Components\TextInput::make('pesapal.currency')
-                                    ->label('Currency')
-                                    ->default('KES')
-                                    ->maxLength(10),
+                                        Forms\Components\Toggle::make('pesapal.sandbox')
+                                            ->label('Use Pesapal Sandbox')
+                                            ->default(true),
+
+                                        Forms\Components\TextInput::make('pesapal.currency')
+                                            ->label('Currency')
+                                            ->default('KES')
+                                            ->maxLength(10),
+                                    ]),
+
+                                // M-Pesa Daraja Settings
+                                Forms\Components\Section::make('M-Pesa (Daraja API)')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('mpesa.consumer_key')
+                                            ->label('Daraja API Key')
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('mpesa.consumer_secret')
+                                            ->label('Daraja API Secret')
+                                            ->password()
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('mpesa.business_shortcode')
+                                            ->label('Business Short Code')
+                                            ->placeholder('e.g., 174379')
+                                            ->maxLength(10),
+
+                                        Forms\Components\TextInput::make('mpesa.passkey')
+                                            ->label('M-Pesa Online Passkey')
+                                            ->password()
+                                            ->helperText('From your M-Pesa merchant dashboard')
+                                            ->maxLength(255),
+
+                                        Forms\Components\TextInput::make('mpesa.callback_url')
+                                            ->label('M-Pesa Callback URL')
+                                            ->helperText('Public webhook/callback URL Safaricom will call (e.g., https://example.com/api/mpesa/callback)')
+                                            ->url()
+                                            ->maxLength(1024),
+
+                                        Forms\Components\Toggle::make('mpesa.sandbox')
+                                            ->label('Use Sandbox (Daraja Test)')
+                                            ->default(true),
+
+                                        Forms\Components\TextInput::make('mpesa.currency')
+                                            ->label('Currency')
+                                            ->default('KES')
+                                            ->maxLength(10),
+                                    ]),
                             ]),
                     ]),
             ]);

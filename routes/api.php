@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PesapalController;
+use App\Http\Controllers\MpesaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,3 +35,12 @@ Route::post('/payments/pesapal/callback', [PesapalController::class, 'callback']
 Route::post('/payments/pesapal/ipn', [PesapalController::class, 'ipn'])
     ->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)
     ->name('api.pesapal.ipn');
+
+/**
+ * M-Pesa Daraja API callbacks
+ * These routes receive STK push confirmation from Safaricom
+ * No authentication or CSRF verification needed
+ */
+Route::post('/mpesa/callback', [MpesaController::class, 'callback'])
+    ->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)
+    ->name('api.mpesa.callback');

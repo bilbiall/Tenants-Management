@@ -74,7 +74,7 @@ class PendingPaymentResource extends Resource
             ->actions([
                 Action::make('view')
                     ->label('View')
-                    ->url(fn (PendingPayment $record) => route('filament.resources.pending-payments.view', ['record' => $record->id]))
+                    ->url(fn (PendingPayment $record) => url(config('filament.path', 'admin') . '/resources/pending-payments/' . $record->id))
                     ->openUrlInNewTab(false),
 
                 Action::make('mark_completed')
