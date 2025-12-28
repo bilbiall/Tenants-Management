@@ -72,7 +72,34 @@ class MpesaController extends Controller
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
+        // Refresh transaction from database (in case callback has updated it)
+        $transaction->refresh();
+
+        // If already completed via callback, return that immediately
+        if ($transaction->status === 'completed') {
+            \Log::info('Transaction already completed via callback', ['transaction_id' => $transactionId]);
+            return response()->json([
+                'success' => true,
+                'status' => $transaction->status,
+                'result_status' => 'completed',
+            ]);
+        }
+
+        // If already failed, return that
+        if ($transaction->status === 'failed') {
+            return response()->json([
+                'success' => false,
+                'status' => $transaction->status,
+                'result_status' => 'failed',
+                'reason' => $transaction->response_message,
+            ]);
+        }
+
+        // Still pending, query Safaricom for status
         $result = $this->mpesaService->queryTransactionStatus($transaction);
+
+        // Refresh again after query (in case status was updated)
+        $transaction->refresh();
 
         return response()->json([
             'success' => $result['success'],

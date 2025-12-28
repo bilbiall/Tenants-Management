@@ -90,21 +90,31 @@
             if (!transactionId) return;
 
             fetch(`/tenant/mpesa/status?transaction_id=${transactionId}`)
-                .then(r => r.json())
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                })
                 .then(data => {
+                    console.log('Status check response:', data);
                     if (data.result_status === 'completed') {
                         showSuccess();
                     } else if (data.result_status === 'failed') {
-                        showFailed(data.reason);
+                        showFailed(data.reason || 'Payment was declined');
                     } else if (data.result_status === 'pending') {
                         showWaiting();
                     }
                 })
-                .catch(e => console.error('Status check error:', e));
+                .catch(e => {
+                    console.error('Status check error:', e);
+                    // Continue polling on network errors
+                });
         }
 
         function startPolling() {
             if (!transactionId) return;
+            // Check immediately
+            checkStatus();
+            // Then check every 1 second
             pollInterval = setInterval(() => {
                 pollCount++;
                 checkStatus();
@@ -117,9 +127,12 @@
 
         function showSuccess() {
             clearInterval(pollInterval);
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `<div class="status success"><strong>✓ Payment Confirmed!</strong> Redirecting to thank you page...</div>`;
+            container.style.display = 'block';
             setTimeout(() => {
                 window.location.href = `/mpesa/callback/redirect?transaction_id=${transactionId}`;
-            }, 500);
+            }, 1000);
         }
 
         function showWaiting() {
@@ -129,7 +142,7 @@
         function showFailed(reason) {
             clearInterval(pollInterval);
             const container = document.getElementById('statusContainer');
-            container.innerHTML = `<div class="status error"><strong>Payment Failed:</strong> ${reason || 'Unknown reason'}</div>`;
+            container.innerHTML = `<div class="status error"><strong>✗ Payment Failed:</strong> ${reason || 'Unknown reason'}</div>`;
             container.style.display = 'block';
         }
 

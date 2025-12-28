@@ -178,6 +178,12 @@ class MpesaService
             $body = $response->json() ?? [];
             $rawBody = $response->body();
 
+            \Log::debug('M-Pesa STK push response', [
+                'status' => $response->status(),
+                'body' => $body,
+                'raw_body' => $rawBody,
+            ]);
+
             $transaction->meta = array_merge($transaction->meta ?? [], [
                 'stk_request' => $payload,
                 'stk_response' => $body,
@@ -267,6 +273,12 @@ class MpesaService
         try {
             $base = $this->sandbox ? 'https://sandbox.safaricom.co.ke' : 'https://api.safaricom.co.ke';
 
+            \Log::info('M-Pesa status query sent', [
+                'transaction_id' => $transaction->id,
+                'checkout_request_id' => $transaction->checkout_request_id,
+                'url' => $base . '/mpesa/stkpushquery/v1/query',
+            ]);
+
             $response = Http::withToken($accessToken)
                 ->asJson()
                 ->timeout(10)
@@ -274,27 +286,49 @@ class MpesaService
 
             $body = $response->json() ?? [];
 
+            \Log::debug('M-Pesa status query response', [
+                'transaction_id' => $transaction->id,
+                'status_code' => $response->status(),
+                'body' => $body,
+            ]);
+
             if ($response->ok()) {
                 $resultCode = $body['ResultCode'] ?? null;
                 
-                if ($resultCode === '0') {
+                // Handle both string and integer result codes
+                $resultCodeInt = (int) $resultCode;
+                
+                if ($resultCodeInt === 0) {
                     // Success
                     $transaction->status = 'completed';
-                    $transaction->result_code = $resultCode;
+                    $transaction->result_code = (string) $resultCode;
                     $transaction->result_desc = $body['ResultDesc'] ?? null;
                     $transaction->receipt_number = $body['MerchantRequestID'] ?? null;
                     $transaction->save();
                     
+                    \Log::info('M-Pesa payment confirmed via status query', [
+                        'transaction_id' => $transaction->id,
+                        'result_code' => $resultCode,
+                        'result_desc' => $body['ResultDesc'] ?? null,
+                    ]);
+                    
                     return ['success' => true, 'status' => 'completed'];
-                } elseif ($resultCode === '1032') {
+                } elseif ($resultCodeInt === 1032) {
                     // Request timeout (not cancelled, just pending)
+                    \Log::debug('M-Pesa query still pending', ['transaction_id' => $transaction->id]);
                     return ['success' => true, 'status' => 'pending'];
                 } else {
                     // Failed or cancelled
                     $transaction->status = 'failed';
-                    $transaction->result_code = $resultCode;
+                    $transaction->result_code = (string) $resultCode;
                     $transaction->result_desc = $body['ResultDesc'] ?? null;
                     $transaction->save();
+                    
+                    \Log::warning('M-Pesa query returned failure', [
+                        'transaction_id' => $transaction->id,
+                        'result_code' => $resultCode,
+                        'result_desc' => $body['ResultDesc'] ?? null,
+                    ]);
                     
                     return ['success' => false, 'status' => 'failed', 'reason' => $body['ResultDesc'] ?? null];
                 }
@@ -331,6 +365,12 @@ class MpesaService
 
             $transaction->result_code = $resultCode;
             $transaction->result_desc = $resultDesc;
+
+            \Log::info('M-Pesa callback received', [
+                'transaction_id' => $transaction->id,
+                'result_code' => $resultCode,
+                'result_desc' => $resultDesc,
+            ]);
 
             if ($resultCode === 0) {
                 // Payment successful
